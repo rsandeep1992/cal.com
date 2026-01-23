@@ -1,6 +1,5 @@
 import prismock from "@calcom/testing/lib/__mocks__/prisma";
 import type { FeatureId } from "@calcom/features/flags/config";
-import { FeaturesRepository } from "@calcom/features/flags/features.repository";
 import { PrismaUserFeatureRepository } from "@calcom/features/flags/repositories/PrismaUserFeatureRepository";
 import type { PrismaClient } from "@calcom/prisma/client";
 import { expect, it, vi } from "vitest";
@@ -16,14 +15,8 @@ vi.mock("@calcom/features/di/containers/UserFeatureRepository", () => ({
 // doesn't run any authentication checks or input validation.
 it("returns if user has access to feature", async () => {
   vi.clearAllMocks();
-  const featuresRepository = new FeaturesRepository(prismock);
   const userId = 1;
-  await featuresRepository.setUserFeatureState({
-    userId,
-    featureId: "mock-feature" as FeatureId,
-    state: "enabled",
-    assignedBy: "1",
-  });
+  await userFeatureRepository.upsert(userId, "mock-feature" as FeatureId, true, "1");
   await expect(checkIfUserHasFeatureUseCase(userId, "nonexistent-feature")).resolves.toBe(false);
   await expect(checkIfUserHasFeatureUseCase(userId, "mock-feature")).resolves.toBe(true);
 });
