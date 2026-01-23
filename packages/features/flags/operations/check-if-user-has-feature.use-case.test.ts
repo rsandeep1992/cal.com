@@ -1,15 +1,21 @@
 import prismock from "@calcom/testing/lib/__mocks__/prisma";
-
-import { expect, it } from "vitest";
-
 import type { FeatureId } from "@calcom/features/flags/config";
 import { FeaturesRepository } from "@calcom/features/flags/features.repository";
-
+import { PrismaUserFeatureRepository } from "@calcom/features/flags/repositories/PrismaUserFeatureRepository";
+import type { PrismaClient } from "@calcom/prisma/client";
+import { expect, it, vi } from "vitest";
 import { checkIfUserHasFeatureUseCase } from "./check-if-user-has-feature.use-case";
+
+const userFeatureRepository = new PrismaUserFeatureRepository(prismock as unknown as PrismaClient);
+
+vi.mock("@calcom/features/di/containers/UserFeatureRepository", () => ({
+  getUserFeatureRepository: () => userFeatureRepository,
+}));
 
 // This is identical to the test in the controller since the controller currently
 // doesn't run any authentication checks or input validation.
 it("returns if user has access to feature", async () => {
+  vi.clearAllMocks();
   const featuresRepository = new FeaturesRepository(prismock);
   const userId = 1;
   await featuresRepository.setUserFeatureState({

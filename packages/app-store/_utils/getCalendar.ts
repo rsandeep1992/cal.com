@@ -4,7 +4,7 @@ import { CalendarCacheEventService } from "@calcom/features/calendar-subscriptio
 import { CalendarCacheWrapper } from "@calcom/features/calendar-subscription/lib/cache/CalendarCacheWrapper";
 import { CalendarTelemetryWrapper } from "@calcom/features/calendar-subscription/lib/telemetry/CalendarTelemetryWrapper";
 import { getFeatureRepository } from "@calcom/features/di/containers/FeatureRepository";
-import { FeaturesRepository } from "@calcom/features/flags/features.repository";
+import { getUserFeatureRepository } from "@calcom/features/di/containers/UserFeatureRepository";
 import logger from "@calcom/lib/logger";
 import { isTelemetryEnabled } from "@calcom/lib/sentryWrapper";
 import { prisma } from "@calcom/prisma";
@@ -53,13 +53,13 @@ export const getCalendar = async (
   let shouldServeCache = false;
   if (mode === "slots") {
     const featureRepository = getFeatureRepository();
-    const featuresRepository = new FeaturesRepository(prisma);
+    const userFeatureRepository = getUserFeatureRepository();
     const [isCalendarSubscriptionCacheEnabled, isCalendarSubscriptionCacheEnabledForUser] = await Promise.all(
       [
         featureRepository.checkIfFeatureIsEnabledGlobally(
           CalendarSubscriptionService.CALENDAR_SUBSCRIPTION_CACHE_FEATURE
         ),
-        featuresRepository.checkIfUserHasFeatureNonHierarchical(
+        userFeatureRepository.checkIfUserHasFeatureNonHierarchical(
           credential.userId as number,
           CalendarSubscriptionService.CALENDAR_SUBSCRIPTION_CACHE_FEATURE
         ),
