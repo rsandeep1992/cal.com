@@ -48,48 +48,6 @@ export class FeaturesRepository implements IFeaturesRepository {
   }
 
   /**
-   * Gets a map of all feature flags and their enabled status.
-   * Uses caching to avoid hitting the database on every request.
-   * @returns Promise<AppFlags> - A map of feature flags to their enabled status
-   */
-  public async getFeatureFlagMap() {
-    const flags = await this.getAllFeatures();
-    return flags.reduce((acc, flag) => {
-      acc[flag.slug as FeatureId] = flag.enabled;
-      return acc;
-    }, {} as AppFlags);
-  }
-
-  /**
-   * Gets all features enabled for a specific team in a map format.
-   * @param teamId - The ID of the team to get features for
-   * @returns Promise<{ [slug: string]: boolean } | null>
-   */
-  public async getEnabledTeamFeatures(teamId: number) {
-    const result = await this.prismaClient.teamFeatures.findMany({
-      where: {
-        teamId,
-        enabled: true,
-      },
-      select: {
-        feature: {
-          select: {
-            slug: true,
-          },
-        },
-      },
-    });
-
-    if (!result.length) return null;
-
-    const features: TeamFeatures = Object.fromEntries(
-      result.map((teamFeature) => [teamFeature.feature.slug, true])
-    ) as TeamFeatures;
-
-    return features;
-  }
-
-  /**
    * Checks if a feature is enabled globally in the application.
    * @param slug - The feature flag identifier to check
    * @returns Promise<boolean> - True if the feature is enabled globally, false otherwise

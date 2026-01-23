@@ -23,7 +23,6 @@ vi.mock("@calcom/features/flags/features.repository", () => ({
       checkIfTeamHasFeature: vi.fn().mockResolvedValue(true),
       checkIfFeatureIsEnabledGlobally: vi.fn().mockResolvedValue(true),
       getAllFeatures: vi.fn().mockResolvedValue([]),
-      getFeatureFlagMap: vi.fn().mockResolvedValue({}),
       checkIfUserHasFeature: vi.fn().mockResolvedValue(true),
     };
   }),

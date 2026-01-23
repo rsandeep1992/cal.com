@@ -1,6 +1,6 @@
+import { getFeatureRepository } from "@calcom/features/di/containers/FeatureRepository";
 import { getTeamFeatureRepository } from "@calcom/features/di/containers/TeamFeatureRepository";
 import type { AppFlags } from "@calcom/features/flags/config";
-import { FeaturesRepository } from "@calcom/features/flags/features.repository";
 import { prisma } from "@calcom/prisma";
 import publicProcedure from "@calcom/trpc/server/procedures/publicProcedure";
 import { router } from "@calcom/trpc/server/trpc";
@@ -9,8 +9,8 @@ import { map } from "./procedures/map";
 
 export const featureFlagRouter = router({
   list: publicProcedure.query(async () => {
-    const featuresRepository = new FeaturesRepository(prisma);
-    return featuresRepository.getAllFeatures();
+    const featuresRepository = getFeatureRepository();
+    return featuresRepository.findAll();
   }),
   checkTeamFeature: publicProcedure
     .input(
